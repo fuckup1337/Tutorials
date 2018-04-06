@@ -1,3 +1,4 @@
+https://www.bugcrowd.com/advice-from-a-bug-hunter-xxe/
 
 Advice From A Researcher: Hunting XXE For Fun and Profit
 Posted by Bugcrowd | July 3, 2015
@@ -9,7 +10,7 @@ About the Author: Ben Sadeghipour has been participating in bug bounty programs 
 In the competitive world of bug bounties there are many strategies that work. One approach that works particularly well is looking for critical vulnerabilities that result in a bigger reward and better recognition. Critical vulnerabilities also have lower rates of duplicate reports, which means greater odds that you are first to find. This post talks about a type of critical vulnerability that can be found in web applications, the XML External Entity or as it is better known, XXE.
 What is XXE and how do I find it?
 
-An XML External Entity vulnerability (abbreviated XXE) is an attack against an application parsing XML input from an unreliable source. It’s usually caused by a misconfigured XML parser. For example, if using a PHP (and according to PHP’s own <a href="http://php.net/manual/en/function.libxml-disable-entity-loader.php">documentation</a>), libxml_disable_entity_loader needs to be set to TRUE in order to disable the use of external entities.
+An XML External Entity vulnerability (abbreviated XXE) is an attack against an application parsing XML input from an unreliable source. It’s usually caused by a misconfigured XML parser. For example, if using a PHP (and according to PHP’s own documentation), libxml_disable_entity_loader needs to be set to TRUE in order to disable the use of external entities.
 
 One of the most common ways of finding an XXE is to abuse a file upload function. For example, you may be able to inject your malicious content into a document where user input or customer data is being imported into a application. Note that exploiting an XXE isn’t limited to injecting content into an XML file. There are many other extensions that use XML formatting such as docx, pptx, gpx, pdf and xml itself. You may also be able to find applications where a POST request carries a XML data (see example below for more information).
 What can I do with XXE and how do I exploit it?
