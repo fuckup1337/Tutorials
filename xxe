@@ -3,21 +3,38 @@ https://www.bugcrowd.com/advice-from-a-bug-hunter-xxe/
 Advice From A Researcher: Hunting XXE For Fun and Profit
 Posted by Bugcrowd | July 3, 2015
 
-About the Author: Ben Sadeghipour has been participating in bug bounty programs since February of 2014. After his first few bugs, he came to realize that bug bounties are a great way to learn more about web application security as well as make some extra money while going to school – computer science major. Currently Ben is an intern at Bugcrowd and continues to do bug bounty research. You can see more of his work on nahamsec.com.
+About the Author: Ben Sadeghipour has been participating in bug bounty programs since February of 2014. After his first few bugs, 
+he came to realize that bug bounties are a great way to learn more about web application security as well as make some extra money 
+while going to school – computer science major. Currently Ben is an intern at Bugcrowd and continues to do bug bounty research. 
+You can see more of his work on nahamsec.com.
 
 —
 
-In the competitive world of bug bounties there are many strategies that work. One approach that works particularly well is looking for critical vulnerabilities that result in a bigger reward and better recognition. Critical vulnerabilities also have lower rates of duplicate reports, which means greater odds that you are first to find. This post talks about a type of critical vulnerability that can be found in web applications, the XML External Entity or as it is better known, XXE.
+In the competitive world of bug bounties there are many strategies that work. One approach that works particularly well is looking 
+for critical vulnerabilities that result in a bigger reward and better recognition. Critical vulnerabilities also have lower rates 
+of duplicate reports, which means greater odds that you are first to find. This post talks about a type of critical vulnerability 
+that can be found in web applications, the XML External Entity or as it is better known, XXE.
 What is XXE and how do I find it?
 
-An XML External Entity vulnerability (abbreviated XXE) is an attack against an application parsing XML input from an unreliable source. It’s usually caused by a misconfigured XML parser. For example, if using a PHP (and according to PHP’s own documentation), libxml_disable_entity_loader needs to be set to TRUE in order to disable the use of external entities.
+An XML External Entity vulnerability (abbreviated XXE) is an attack against an application parsing XML input from an unreliable 
+source. It’s usually caused by a misconfigured XML parser. For example, if using a PHP (and according to PHP’s own documentation), 
+libxml_disable_entity_loader needs to be set to TRUE in order to disable the use of external entities.
 
-One of the most common ways of finding an XXE is to abuse a file upload function. For example, you may be able to inject your malicious content into a document where user input or customer data is being imported into a application. Note that exploiting an XXE isn’t limited to injecting content into an XML file. There are many other extensions that use XML formatting such as docx, pptx, gpx, pdf and xml itself. You may also be able to find applications where a POST request carries a XML data (see example below for more information).
+One of the most common ways of finding an XXE is to abuse a file upload function. For example, you may be able to inject your 
+malicious content into a document where user input or customer data is being imported into a application. Note that exploiting 
+an XXE isn’t limited to injecting content into an XML file. There are many other extensions that use XML formatting such as docx, 
+pptx, gpx, pdf and xml itself. You may also be able to find applications where a POST request carries a XML data (see example below 
+for more information).
+
 What can I do with XXE and how do I exploit it?
 
-Typically, with XXE you will craft a payload that when executed, will read local files on the server, access internal networks, scan internal ports, or execute commands on a remote server (rarely). XXE’s are critical vulnerabilities because they allow an attacker to read sensitive data and system files on a local machine that could be escalated depending on the data stored on the machine. These attack vectors are all dependent on the permissions given to the parsing application.
+Typically, with XXE you will craft a payload that when executed, will read local files on the server, access internal networks, 
+scan internal ports, or execute commands on a remote server (rarely). XXE’s are critical vulnerabilities because they allow an 
+attacker to read sensitive data and system files on a local machine that could be escalated depending on the data stored on the 
+machine. These attack vectors are all dependent on the permissions given to the parsing application.
 
-Let’s suppose that we have found a (very easy) XXE vulnerability that sends the following content in a POST request to the application:
+Let’s suppose that we have found a (very easy) XXE vulnerability that sends the following content in a POST request to the 
+application:
 
     [code]
 
@@ -42,7 +59,8 @@ Let’s suppose that we have found a (very easy) XXE vulnerability that sends th
 Attacking this to see if it’s vulnerable:
 Method 1 – Identifying a vulnerable server by using the SYSTEM entity:
 
-The first step is to see if we are able to use the SYSTEM entity in order to request a local file on the victim machine and/or a remote file on a host of our own.
+The first step is to see if we are able to use the SYSTEM entity in order to request a local file on the victim machine 
+and/or a remote file on a host of our own.
 
     [code]
 
@@ -68,7 +86,9 @@ The first step is to see if we are able to use the SYSTEM entity in order to req
 
  
 
-As shown in the second line of code in the above example, we are requesting FILE.ext on our remote host. Please note that in order to make things nicer and easier, we will use python’s SimpleHTTPServer (python -m SimpleHTTPServer 80). Now if the attack is successful then we will receive the following error on our host:
+As shown in the second line of code in the above example, we are requesting FILE.ext on our remote host. 
+Please note that in order to make things nicer and easier, we will use python’s SimpleHTTPServer (python -m SimpleHTTPServer 80). 
+Now if the attack is successful then we will receive the following error on our host:
 
     xx.xx.xxx.xxx – – [20/Feb/2015 23:16:53] code 404, message File not found
 
@@ -146,7 +166,8 @@ or, alternatively, we can use “file://etc” to receive the contents of /etc d
 PROTIP: You may use gopher:// file:// ftp:// or other attributes for this step to bypass filter restrictions
 Method 3 – XXE via File Upload
 
-Suppose, we have an upload functionality where we are allowed to upload all of our inventory or customers list via an XML formatted file (most web applications provide a stock or default format to be followed by users to make this process easier).
+Suppose, we have an upload functionality where we are allowed to upload all of our inventory or customers list via an XML 
+formatted file (most web applications provide a stock or default format to be followed by users to make this process easier).
 
     [code]
 
@@ -172,7 +193,8 @@ Suppose, we have an upload functionality where we are allowed to upload all of o
 
     [/code]
 
-We can use our knowledge and tricks from the previous methods to inject our payload into the XML file before it is uploaded onto the application:
+We can use our knowledge and tricks from the previous methods to inject our payload into the XML file before it is uploaded onto 
+the application:
 
     [code]
 
@@ -204,7 +226,9 @@ Which will give us similar results as “method 2”:
 
 Payouts and Examples
 
-XML External Entity vulnerabilities have been one of the highest paying vulnerability types due to its severity. Google has paid researchers a minimum $10,000 for a single XXE on their productions servers. Below you can find some examples of these reports.
+XML External Entity vulnerabilities have been one of the highest paying vulnerability types due to its severity. 
+Google has paid researchers a minimum $10,000 for a single XXE on their productions servers. Below you can find some 
+examples of these reports.
 
 How we got read access on Google’s production servers (Rewarded $10,000)
 
@@ -221,7 +245,8 @@ Runkeeper XXE
  
 Final Thoughts
 
-You are able to find these vulnerabilities by intercepting and manipulating the data uploaded via a file containing XML structured data, as well as intercepting the headers containing XML data while making a request.
+You are able to find these vulnerabilities by intercepting and manipulating the data uploaded via a file containing XML 
+structured data, as well as intercepting the headers containing XML data while making a request.
 
 Resources:
 
